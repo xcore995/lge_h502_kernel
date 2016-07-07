@@ -103,12 +103,12 @@
 #endif
 
 // physical dimension
-#if 1
-#define PHYSICAL_WIDTH        (58)
-#define PHYSICAL_HIGHT         (104)
+#if 0
+//#define PHYSICAL_WIDTH        (64)
+//#define PHYSICAL_HIGHT         (116)
 #else
-#define PHYSICAL_WIDTH        (70)
-#define PHYSICAL_HIGHT         (122)
+#define PHYSICAL_WIDTH        (720)
+#define PHYSICAL_HIGHT         (1280)
 #endif
 
 #define LCM_ID       (0xb9)
@@ -147,7 +147,7 @@ struct LCM_setting_table {
     unsigned char para_list[64];
 };
 
-#if 1
+#if 0
 /* Version 1 & No Gamma  */
 static struct LCM_setting_table lcm_initialization_setting[] = {
 
@@ -172,38 +172,38 @@ static struct LCM_setting_table lcm_initialization_setting[] = {
 #if 1
 
 /* Version 3 & without Gamma */
-static LCM_setting_table_V3 lcm_initialization_setting[] = {
+static struct LCM_setting_table lcm_initialization_setting[] = {
 
-	{0X39, 0X51, 1, {0XFF}},	//Write_Display_Brightness
-	{0X39, 0X53, 1, {0X0C}},		//Write_CTRL_Display
-	{0X39, 0X55, 1, {0X00}},		//Write_CABC
-	{0X29, 0XB0, 1, {0X04}},		//Test command
-	{0X29, 0XC1, 3, {0X84,0X61,0X00}},	//Test command
-	{0X29, 0XC7, 30, {0x00,0x0A,0x16,0x20,0x2C, //GAMMA 1
+	{0X51, 1, {0XFF}},	//Write_Display_Brightness
+	{0X53, 1, {0X0C}},		//Write_CTRL_Display
+	{0X55, 1, {0X00}},		//Write_CABC
+	{0XB0, 1, {0X04}},		//Test command
+	{0XC1, 3, {0X84,0X61,0X00}},	//Test command
+	{0XC7, 30, {0x00,0x0A,0x16,0x20,0x2C, //GAMMA 1
 					0x39,0x43,0x52,0x36,0x3E,
 					0x4B,0x58,0x5A,0x5F,0x67,
 					0x00,0x0A,0x16,0x20,0x2C,
 					0x39,0x43,0x52,0x36,0x3E,
 					0x4B,0x58,0x5A,0x5F,0x67}}, //GAMMA 2
-	{0X29, 0XC8, 19, {0x00,0x00,0x00,0x00,0x00,
+	{0XC8, 19, {0x00,0x00,0x00,0x00,0x00,
 						0xFC,0x00,0x00,0x00,0x00,
 						0x00,0xFC,0x00,0x00,0x00,
 						0x00,0x00,0xFC,0x00}},
-	{0X29, 0XB8, 6, {0x07,0x90,0x1E,0x00,0x40,0x32}}, //Back Light Control 1
-	{0X29, 0XB9, 6, {0x07,0x8C,0x3C,0x20,0x2D,0x87}},
-	{0X29, 0XBA, 6, {0x07,0x82,0x3C,0x10,0x3C,0xB4}},
-	{0X29, 0XCE, 24, {0x7D,0x40,0x43,0x49,0x55,
+	{0XB8, 6, {0x07,0x90,0x1E,0x00,0x40,0x32}}, //Back Light Control 1
+	{0XB9, 6, {0x07,0x8C,0x3C,0x20,0x2D,0x87}},
+	{0XBA, 6, {0x07,0x82,0x3C,0x10,0x3C,0xB4}},
+	{0XCE, 24, {0x7D,0x40,0x43,0x49,0x55,
 					0x62,0x71,0x82,0x94,0xA8,
 					0xB9,0xCB,0xDB,0xE9,0xF5,
 					0xFC,0xFF,0x02,0x00,0x04,
 					0x04,0x44,0x04,0x01}},
-	{0X29, 0XBB, 3, {0x01,0x1E,0x14}},
-	{0X29, 0XBC, 3, {0x01,0x50,0x32}},
-	{0X29, 0XBD, 3, {0x00,0xB4,0xA0}},
-	{0X29, 0XD6, 1, {0x01}},
-	{0X15, 0X36, 1, {0x00}},
-	{0X05, 0X29, 1, {0x00}},
-	{0X05, 0X11, 1, {0x00}},
+	{0XBB, 3, {0x01,0x1E,0x14}},
+	{0XBC, 3, {0x01,0x50,0x32}},
+	{0XBD, 3, {0x00,0xB4,0xA0}},
+	{0XD6, 1, {0x01}},
+	{0X36, 1, {0x00}},
+	{0X29, 1, {0x00}},
+	{0X11, 1, {0x00}},
 	{REGFLAG_DELAY, 120, {}},    //MDELAY(120)
 	{REGFLAG_END_OF_TABLE, 0x00, {}},
 
@@ -356,83 +356,79 @@ static void init_lcm_registers(void)
 #if 1
 	push_table(lcm_initialization_setting, sizeof(lcm_initialization_setting) / sizeof(struct LCM_setting_table), 1);
 #else
-
-	data_array[0] = 0xff513900; //Write_Display_Brightness
+	data_array[0] = 0xff511500; //Write_Display_Brightness
 	dsi_set_cmdq(data_array, 1, 1);
 
-	data_array[0] = 0x2c533900; //Write_CTRL_Display
-//	data_array[0] = 0x0c533900; //Write_CTRL_Display
+	data_array[0] = 0x2c531500; //Write_CTRL_Display
 	dsi_set_cmdq(data_array, 1, 1);
 
-	data_array[0] = 0x40553900; //Write_CABC
-//	data_array[0] = 0x00553900; //Write_CABC
+	data_array[0] = 0x40551500; //Write_CABC
 	dsi_set_cmdq(data_array, 1, 1);
 
 	data_array[0] = 0x04B02900; //Test command
 	dsi_set_cmdq(data_array, 1, 1);
 
-	data_array[0] = 0x84C12900;  //Test Command
-	data_array[1] = 0x00000061;
+	data_array[0] = 0x00033902;  //Test Command
+	data_array[1] = 0x006184C1;
 	dsi_set_cmdq(data_array, 2, 1);
-#if 0
-	data_array[0] = 0x00C72900; //Gamma 1
-	data_array[1] = 0x2C20160A;
-	data_array[2] = 0x36524339;
-	data_array[3] = 0x5A584B3E;
-	data_array[4] = 0x0A00675F;
-	data_array[5] = 0x392C2016;
-	data_array[6] = 0x3E365243;
-	data_array[7] = 0x5A584B3E;
-	data_array[8] = 0x00000067;
+
+	data_array[0] = 0x001F3902; //Gamma 1
+	data_array[1] = 0x160A00C7;
+	data_array[2] = 0x43392C20;
+	data_array[3] = 0x4B3E3652;
+	data_array[4] = 0x675F5A58;
+	data_array[5] = 0x20160A00;
+	data_array[6] = 0x5243392C;
+	data_array[7] = 0x584B3E36;
+	data_array[8] = 0x00675F5A;
 	dsi_set_cmdq(data_array, 9, 1);
 
-	data_array[0] = 0x00C82900; //Gamma 2
-	data_array[1] = 0x00000000;
-	data_array[2] = 0x000000FC;
-	data_array[3] = 0x00FC0000;
-	data_array[4] = 0x00000000;
-	data_array[5] = 0x000000FC;
+	data_array[0] = 0x00143902; //Gamma 2
+	data_array[1] = 0x000000C8;
+	data_array[2] = 0x00FC0000;
+	data_array[3] = 0x00000000;
+	data_array[4] = 0x000000FC;
+	data_array[5] = 0x00FC0000;
 	dsi_set_cmdq(data_array, 6, 1);
 
-	data_array[0] = 0x07B82900; 	//Backlight 1
-	data_array[1] = 0x40001E90;
-	data_array[2] = 0x00000032;
+	data_array[0] = 0x00073902; 	//Backlight 1
+	data_array[1] = 0x1E9007B8;
+	data_array[2] = 0x00324000;
 	dsi_set_cmdq(data_array, 3, 1);	
 
-	data_array[0] = 0x07B92900; 	//Backlight 2
-	data_array[1] = 0x2D203C8C;
-	data_array[2] = 0x00000087;
+	data_array[0] = 0x00073902; 	//Backlight 2
+	data_array[1] = 0x3C8C07B9;
+	data_array[2] = 0x00872D20;
 	dsi_set_cmdq(data_array, 3, 1);	
 
-	data_array[0] = 0x07BA2900; 	//Backlight 3
-	data_array[1] = 0x3C103C82;
-	data_array[2] = 0x000000B4;
+	data_array[0] = 0x00073902; 	//Backlight 3
+	data_array[1] = 0x3C8207BA;
+	data_array[2] = 0x00B43C10;
 	dsi_set_cmdq(data_array, 3, 1);	
 
-	data_array[0] = 0x7DCE2900; 	//Backlight 4
-	data_array[1] = 0x55494340;
-	data_array[2] = 0x94827162;
-	data_array[3] = 0xDBCBB9A8;
-	data_array[4] = 0xFFFCF5E9;
-	data_array[5] = 0x040402FF;
-	data_array[6] = 0x0002FFFC;
-	data_array[7] = 0x00010444;
+	data_array[0] = 0x00193902; 	//Backlight 4
+	data_array[1] = 0x43407DCE;
+	data_array[2] = 0x71625549;
+	data_array[3] = 0xB9A89482;
+	data_array[4] = 0xF5E9DBCB;
+	data_array[5] = 0x0002FFFC;
+	data_array[6] = 0x04440404;
+	data_array[7] = 0x00000001;
 	dsi_set_cmdq(data_array, 8, 1);	
 
-	data_array[0] = 0x01BB2900; //SRE ctrl 1
-	data_array[0] = 0x0000141E;
+	data_array[0] = 0x00043902; //SRE ctrl 1
+	data_array[0] = 0x141E01BB;
 	dsi_set_cmdq(data_array, 2, 1);
 
-	data_array[0] = 0x01BC2900; //SRE ctrl 2
-	data_array[0] = 0x00003250;
+	data_array[0] = 0x00043902; //SRE ctrl 2
+	data_array[0] = 0x325001BC;
 	dsi_set_cmdq(data_array, 2, 1);
 
-	data_array[0] = 0x00BD2900; //SRE ctrl 3
-	data_array[0] = 0x0000A0B4;
+	data_array[0] = 0x00043902; //SRE ctrl 3
+	data_array[0] = 0xA0B400BD;
 	dsi_set_cmdq(data_array, 2, 1);
 
-#endif
-	data_array[0] = 0x01D62900; //test commad
+	data_array[0] = 0x01D61500; //test commad
 	dsi_set_cmdq(data_array, 1, 1);
 
 	data_array[0] = 0x00361500; //set address mode
@@ -472,7 +468,10 @@ static void init_lcm_registers_sleep(void)
 	MDELAY(80);
 	LCM_PRINT("[LCD] init_lcm_registers_sleep \n");
 }
-
+static void init_lcm_registers_wakeup(void)
+{
+	push_table(lcm_initialization_setting, sizeof(lcm_initialization_setting) / sizeof(struct LCM_setting_table), 1);
+}
 
 /* VCAMD 1.8v LDO enable */
 static void ldo_1v8io_on(void)
@@ -483,7 +482,7 @@ static void ldo_1v8io_on(void)
 	upmu_set_rg_vcamd_vosel(3);
 	upmu_set_rg_vcamd_en(1);
 #else
-	hwPowerOn(MT6323_POWER_LDO_VGP2, VOL_1800, "1V8_LCD_VIO_MTK_S");
+	hwPowerOn(MT6323_POWER_LDO_VCAMD, VOL_1800, "1V8_LCD_VIO_MTK_S");
 #endif 
 }
 
@@ -496,7 +495,7 @@ static void ldo_1v8io_off(void)
 	upmu_set_rg_vcamd_en(0);
 
 #else
-	hwPowerDown(MT6323_POWER_LDO_VGP2, "1V8_LCD_VIO_MTK_S");
+	hwPowerDown(MT6323_POWER_LDO_VCAMD, "1V8_LCD_VIO_MTK_S");
 #endif 
 }
 
@@ -512,7 +511,7 @@ static void ldo_3v0_on(void)
 
 
 #else
-	hwPowerOn(MT6323_POWER_LDO_VGP1, VOL_3000, "3V0_TOUCH_VDD");
+	hwPowerOn(MT6323_POWER_LDO_VGP2, VOL_3000, "3V0_LCD_VCC_MTK_S");
 #endif
 #else
 	mt_set_gpio_mode(GPIO_LCM_PWR, GPIO_LCM_PWR_M_GPIO);
@@ -531,7 +530,7 @@ static void ldo_3v0_off(void)
 #elif defined(BUILD_LK)
 	upmu_set_rg_vgp2_en(0);
 #else
-	hwPowerDown(MT6323_POWER_LDO_VGP1, "3V0_TOUCH_VDD");
+	hwPowerDown(MT6323_POWER_LDO_VGP2, "3V0_LCD_VCC_MTK_S");
 #endif
 #else
 	mt_set_gpio_mode(GPIO_LCM_PWR, GPIO_LCM_PWR_M_GPIO);
@@ -546,30 +545,18 @@ DSV power +5V,-5v
 */
 static void ldo_p5m5_dsv_5v5_on(void)
 {
-	mt_set_gpio_mode(GPIO_DSV_AVDD_EN, GPIO_DSV_AVDD_EN_M_GPIO);
-	mt_set_gpio_pull_enable(GPIO_DSV_AVDD_EN, GPIO_PULL_ENABLE);
-	mt_set_gpio_dir(GPIO_DSV_AVDD_EN, GPIO_DIR_OUT);
-	mt_set_gpio_mode(GPIO_DSV_AVEE_EN, GPIO_DSV_AVEE_EN_M_GPIO);
-	mt_set_gpio_pull_enable(GPIO_DSV_AVEE_EN, GPIO_PULL_ENABLE);
-	mt_set_gpio_dir(GPIO_DSV_AVEE_EN, GPIO_DIR_OUT);
-	
-	mt_set_gpio_out(GPIO_DSV_AVEE_EN, GPIO_OUT_ONE);
-	MDELAY(4);
-	mt_set_gpio_out(GPIO_DSV_AVDD_EN, GPIO_OUT_ONE);
+	mt_set_gpio_mode(GPIO_DSV_EN, GPIO_DSV_EN_M_GPIO);
+	mt_set_gpio_pull_enable(GPIO_DSV_EN, GPIO_PULL_ENABLE);
+	mt_set_gpio_dir(GPIO_DSV_EN, GPIO_DIR_OUT);
+	mt_set_gpio_out(GPIO_DSV_EN, GPIO_OUT_ONE);
 }
 
 static void ldo_p5m5_dsv_5v5_off(void)
 {
-	mt_set_gpio_mode(GPIO_DSV_AVDD_EN, GPIO_DSV_AVDD_EN_M_GPIO);
-	mt_set_gpio_pull_enable(GPIO_DSV_AVDD_EN, GPIO_PULL_ENABLE);
-	mt_set_gpio_dir(GPIO_DSV_AVDD_EN, GPIO_DIR_OUT);
-	mt_set_gpio_mode(GPIO_DSV_AVEE_EN, GPIO_DSV_AVEE_EN_M_GPIO);
-	mt_set_gpio_pull_enable(GPIO_DSV_AVEE_EN, GPIO_PULL_ENABLE);
-	mt_set_gpio_dir(GPIO_DSV_AVEE_EN, GPIO_DIR_OUT);
-	
-	mt_set_gpio_out(GPIO_DSV_AVDD_EN, GPIO_OUT_ZERO);
-	MDELAY(10);
-	mt_set_gpio_out(GPIO_DSV_AVEE_EN, GPIO_OUT_ZERO);
+	mt_set_gpio_mode(GPIO_DSV_EN, GPIO_DSV_EN_M_GPIO);
+	mt_set_gpio_pull_enable(GPIO_DSV_EN, GPIO_PULL_ENABLE);
+	mt_set_gpio_dir(GPIO_DSV_EN, GPIO_DIR_OUT);
+	mt_set_gpio_out(GPIO_DSV_EN, GPIO_OUT_ZERO);
 }
 
 
@@ -635,7 +622,7 @@ static void lcm_suspend(void)
 	MDELAY(10);
 	//VCI/IOVCC off
 	ldo_1v8io_off();
-	//ldo_ext_3v0_off();
+	ldo_3v0_off();
 
 	LCM_PRINT("[LCD] lcm_suspend \n");
 }
@@ -643,8 +630,34 @@ static void lcm_suspend(void)
 
 static void lcm_resume(void)
 {
-	lcm_init();
-    need_set_lcm_addr = 1;
+#if defined(BUILD_LK) 	
+	ldo_p5m5_dsv_5v5_off();
+#endif
+	ldo_3v0_on();
+	MDELAY(200);
+
+	ldo_1v8io_on();
+
+	MDELAY(200);
+
+	ldo_p5m5_dsv_5v5_on();
+
+	MDELAY(20);
+
+	SET_RESET_PIN(1);
+	MDELAY(20);
+	SET_RESET_PIN(0);
+	MDELAY(2);
+	SET_RESET_PIN(1);
+	MDELAY(20);
+
+//lcm_init();
+	init_lcm_registers();	//SET EXTC ~ sleep out register
+
+//	init_lcm_registers_wakeup();
+	MDELAY(80);
+
+	need_set_lcm_addr = 1;
 	LCM_PRINT("[LCD] lcm_resume \n");
 }
 
@@ -725,8 +738,8 @@ static unsigned int lcm_compare_id(void)
 // ---------------------------------------------------------------------------
 //  Get LCM Driver Hooks
 // ---------------------------------------------------------------------------
-LCM_DRIVER r69338_hd720_dsi_vdo_jdi_y70_drv = {
-	.name = "r69338_hd720_dsi_vdo_jdi_y70",
+LCM_DRIVER r69338_hd720_dsi_vdo_jdi_drv = {
+	.name = "r69338_hd720_dsi_vdo_jdi",
 	.set_util_funcs = lcm_set_util_funcs,
 	.get_params = lcm_get_params,
 	.init = lcm_init,

@@ -21,8 +21,8 @@
 extern LCM_DRIVER otm9605a_dsi_vdo_cs_lcm_drv;
 extern LCM_DRIVER otm9605a_dsi_vdo_dijing_lcm_drv;
 /*                                                                     */
-extern LCM_DRIVER r69338_hd720_dsi_vdo_jdi_y70_drv;
-/*                                                                     */
+/* LGE_CHANGE_S  JDI incell rev A	2014-08-27, sangcheol.seo@lge.com */
+extern LCM_DRIVER r69338_hd720_dsi_vdo_jdi_drv;
 
 LCM_DRIVER* lcm_driver_list[] = 
 {
@@ -35,8 +35,9 @@ LCM_DRIVER* lcm_driver_list[] =
 	&otm9605a_dsi_vdo_dijing_lcm_drv,
 #endif
 
-#if defined(R69338_HD720_DSI_VDO_JDI_Y70)
-	&r69338_hd720_dsi_vdo_jdi_y70_drv,
+
+#if defined(R69338_HD720_DSI_VDO_JDI)
+	&r69338_hd720_dsi_vdo_jdi_drv,
 #endif
 };
 
