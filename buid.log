@@ -1,0 +1,23 @@
+  CHK     include/generated/uapi/linux/version.h
+  CC      scripts/mod/devicetable-offsets.s
+  GEN     scripts/mod/devicetable-offsets.h
+  HOSTCC  scripts/mod/file2alias.o
+  CHK     include/generated/utsrelease.h
+make[1]: `include/generated/mach-types.h' не требует обновления.
+  CALL    scripts/checksyscalls.sh
+  HOSTLD  scripts/mod/modpost
+  CHK     include/generated/compile.h
+  MK_FW   firmware/synaptics/y70/PLG455-V1.22-PR1815058-DS5.2.12.0.1013_40047196.img.gen.S.gen.S.gen.S
+  MK_FW   firmware/synaptics/y70/PLG455-V1.22-PR1815058-DS5.2.12.0.1013_40047196.img.gen.S.gen.o.gen.S
+  MK_FW   firmware/synaptics/y70/PLG455-V1.22-PR1815058-DS5.2.12.0.1013_40047196.img.gen.o.gen.S.gen.S
+  MK_FW   firmware/synaptics/y70/PLG455-V1.22-PR1815058-DS5.2.12.0.1013_40047196.img.gen.o.gen.o.gen.S
+  AS      firmware/synaptics/y70/PLG455-V1.22-PR1815058-DS5.2.12.0.1013_40047196.img.gen.S.gen.S.gen.o
+  AS      firmware/synaptics/y70/PLG455-V1.22-PR1815058-DS5.2.12.0.1013_40047196.img.gen.S.gen.o.gen.o
+  AS      firmware/synaptics/y70/PLG455-V1.22-PR1815058-DS5.2.12.0.1013_40047196.img.gen.o.gen.S.gen.o
+  AS      firmware/synaptics/y70/PLG455-V1.22-PR1815058-DS5.2.12.0.1013_40047196.img.gen.o.gen.o.gen.o
+  LD      firmware/built-in.o
+drivers/misc/mediatek/gpu/mt6582/mali/mali
+  CC      drivers/video/backlight/lm3632_driver.o
+  LD      drivers/video/omap2/displays/built-in.o
+  LD      drivers/video/omap2/built-in.o
+  CC      drivers/video/cfbfillrect.o
