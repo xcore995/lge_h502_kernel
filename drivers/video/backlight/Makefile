@@ -1,8 +1,5 @@
 # Backlight & LCD drivers
 
-obj-$(CONFIG_BACKLIGHT_LM3639)		+= lm3639_driver.o
-obj-$(CONFIG_BACKLIGHT_LM3632)		+= lm3632_driver.o
-
 obj-$(CONFIG_LCD_AMS369FG06)		+= ams369fg06.o
 obj-$(CONFIG_LCD_CLASS_DEVICE)		+= lcd.o
 obj-$(CONFIG_LCD_CORGI)			+= corgi_lcd.o
@@ -39,7 +36,11 @@ obj-$(CONFIG_BACKLIGHT_HP680)		+= hp680_bl.o
 obj-$(CONFIG_BACKLIGHT_HP700)		+= jornada720_bl.o
 obj-$(CONFIG_BACKLIGHT_LM3533)		+= lm3533_bl.o
 obj-$(CONFIG_BACKLIGHT_LM3630)		+= lm3630_bl.o
-obj-$(CONFIG_BACKLIGHT_LM3639)		+= lm3639_bl.o
+#LGE_CHANGE_S sangcheol.seo@lge.com 20140925 - Backlight drivers
+obj-$(CONFIG_BACKLIGHT_LM3639)		+= lm3639_driver.o
+obj-$(CONFIG_BACKLIGHT_LM3632)		+= lm3632_driver.o
+#obj-$(CONFIG_BACKLIGHT_LM3639)		+= lm3639_bl.o
+#LGE_CHANGE_E sangcheol.seo@lge.com 20140925
 obj-$(CONFIG_BACKLIGHT_LOCOMO)		+= locomolcd.o
 obj-$(CONFIG_BACKLIGHT_LP855X)		+= lp855x_bl.o
 obj-$(CONFIG_BACKLIGHT_LP8788)		+= lp8788_bl.o

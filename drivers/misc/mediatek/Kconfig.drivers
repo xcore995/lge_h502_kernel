@@ -720,6 +720,10 @@ config MTK_LEDS
 	  If you want to use MediaTek(R) LEDs support, say Y or M here.
 	  If unsure, say N.
 
+config LEDS_LM3639
+        bool "LM3639 Support"
+        default n
+
 # Memory Card
 config MTK_MMC
 	tristate "MediaTek SD/MMC Card Interface support"

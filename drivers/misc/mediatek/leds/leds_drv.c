@@ -32,7 +32,7 @@
 #include <leds_hal.h>
 /* #include <linux/leds_hal.h> */
 #include "leds_drv.h"
-
+#define TARGET_MT6582_Y90
 
 
 /****************************************************************************
@@ -88,14 +88,26 @@ static int mt65xx_led_set_cust(struct cust_mt65xx_led *cust, int level);
 
 #ifdef CONTROL_BL_TEMPERATURE
 
-/* define int limit for brightness limitation */
-static unsigned int limit = 255;
-static unsigned int limit_flag;
-static unsigned int last_level;
-static unsigned int current_level;
+//define int limit for brightness limitation
+static unsigned  int limit = 255;
+static unsigned  int limit_flag = 0;
+static unsigned  int last_level = 0;
+static unsigned  int current_level = 0;
 static DEFINE_MUTEX(bl_level_limit_mutex);
 extern int disp_bls_set_max_backlight(unsigned int level);
-
+#if defined(CONFIG_BACKLIGHT_LM3639)
+extern unsigned char get_lm3639_backlight_level(void);
+#elif defined(CONFIG_BACKLIGHT_LM3632)
+extern unsigned char get_lm3632_backlight_level(void);
+#endif
+#if defined(TARGET_MT6582_Y90) \
+|| defined(TARGET_MT6732_C90) || defined(TARGET_MT6582_B2L) \
+|| defined(TARGET_MT6582_P1S3G)
+extern void mt_mt65xx_led_set_to_breathmode(void);
+#endif
+#if 1  /* LGE_BSP_COMMON LGE_CHANGE_S 140303 jongwoo82.lee : interface for HW tunning */
+extern int mt_set_cust_backlight_test(int);
+#endif  /* LGE_BSP_COMMON LGE_CHANGE_E 140303 jongwoo82.lee : interface for HW tunning */
 
 /* this API add for control the power and temperature */
 /* if enabe=1, the value of brightness will smaller  than max_level, whatever lightservice transfers to driver */
@@ -460,6 +472,191 @@ static ssize_t show_pwm_register(struct device *dev, struct device_attribute *at
 
 static DEVICE_ATTR(pwm_register, 0664, show_pwm_register, store_pwm_register);
 
+#if defined(TARGET_MT6582_Y90) \
+|| defined(TARGET_MT6732_C90) || defined(TARGET_MT6582_B2L) \
+|| defined(TARGET_MT6582_P1S3G) /* LGE_BSP_COMMON sangcheol.seo@lge.com 140520 : LED */
+void mt_led_off()
+{
+	struct cust_mt65xx_led *cust_led_list = mt_get_cust_led_list();
+
+	mt_mt65xx_led_set_cust(cust_led_list, 0);
+
+}
+static ssize_t store_led_pattern(struct device *dev,struct device_attribute *attr, char *buf,size_t size)
+{
+
+	char *pvalue = NULL;
+	unsigned int pattern = 0;
+	unsigned int led_table_id = 0;
+	size_t count = 0;
+
+	pattern = simple_strtoul(buf,&pvalue,10);
+	//ret = strict_strtoul(buf,10,&val);
+	count = pvalue - buf;
+
+	if (*pvalue && isspace(*pvalue))
+		count++;
+
+	LEDS_DRV_DEBUG("[LED] store_led_pattern:ID[%d] \n",pattern);
+
+	switch(pattern)
+	{
+		case 0:
+			mt_mt65xx_led_set_to_breathmode();
+			mt_led_off();
+			break;
+		case 3:
+			led_table_id = 0; // charging
+			break;
+		case 6:
+			led_table_id = 2; // power off
+			break;
+		case 8:
+			led_table_id = 3; // Alarm
+			break;
+		case 10:
+			led_table_id = 7; // Knock_on / Knock_code_fail / Bluetooth connect / Bluetooth disconnect
+			break;
+		case 38:
+			led_table_id = 4; // Incoming call
+			break;
+		case 39:
+			led_table_id = 8; // missed call
+			break;
+		case 48:
+			led_table_id = 5; // Urgent Incoming call
+			break;
+		default:
+			led_table_id = 9; // default
+			break;
+	}
+
+	if(pattern != 0){
+		mt_mt65xx_breath_mode(led_table_id);
+	}
+
+	return size;
+}
+/* LGE_CHANGE_S: [2015-01-02] jeongjoo.lee@lge.com */
+/* Comment: add show fucntion in order to read permission without 'show'*/
+static ssize_t show_led_pattern(struct device *dev, struct device_attribute *attr, char *buf)
+{
+	return 0;
+}
+
+static DEVICE_ATTR(pattern, 0664, show_led_pattern, store_led_pattern);
+/* LGE_CHANGE_E: [2015-01-02] jeongjoo.lee@lge.com */
+
+static ssize_t store_led_blink(struct device *dev,struct device_attribute *attr, char *buf)
+{
+#if 1  // LGE_BSP_COMMON sangcheol.seo@lge.com 140520 ,
+unsigned int delay_on=0;
+unsigned int delay_off=0;
+unsigned int rgb=0;
+unsigned int freq=0;
+unsigned int duty=0;
+unsigned int trf=0;
+
+
+sscanf(buf,"0x%06x %d %d",&rgb, &delay_on, &delay_off);
+
+LEDS_DRV_DEBUG("[LED] store_led_blink:rgb[%x],delay on[%d], delay off[%d]\n ",rgb,delay_on,delay_off);
+
+duty=25;
+freq=4; //199;
+trf=5; //10;
+delay_on=0x15;
+delay_off=0x4;
+
+mt_mt65xx_breath_mode_2(freq, duty, trf, delay_on,delay_off);
+
+#else
+	struct led_classdev *led_cdev = dev_get_drvdata(dev);
+
+	unsigned long *delay_on;
+	unsigned long *delay_off;
+
+	*delay_on = *delay_off = 500; // ignore value
+
+	mt65xx_blink_set(led_cdev,*delay_on,*delay_off);
+
+	//led_blink_set(dev,*delay_on,*delay_off);
+#endif
+
+
+	return 0;
+}
+/* LGE_CHANGE_S: [2015-01-02] jeongjoo.lee@lge.com */
+/* Comment: add show fucntion in order to read permission without 'show'*/
+static ssize_t show_led_blink(struct device *dev, struct device_attribute *attr, char *buf)
+{
+	return 0;
+}
+
+static DEVICE_ATTR(blink, 0664, show_led_blink, store_led_blink);
+/* LGE_CHANGE_E: [2015-01-02] jeongjoo.lee@lge.com */
+
+#endif /* LGE_CHAGNE_E */
+
+static ssize_t show_backlight_level(struct device *dev,
+		struct device_attribute *attr, char *buf)
+{
+	int r = 0;
+	unsigned char level;
+
+    #if defined(CONFIG_BACKLIGHT_LM3639)
+	level = get_lm3639_backlight_level();
+    #elif defined(CONFIG_BACKLIGHT_LM3632)
+	level = get_lm3632_backlight_level();
+    #endif
+	r = snprintf(buf, PAGE_SIZE, "LCD Backlight Level is : %d\n",level);
+	return r;
+}
+
+#if 1 /* block_warning_message */
+static ssize_t store_backlight_level(struct device *dev,struct device_attribute *attr, char *buf)
+{
+	return 0;
+}
+
+#endif
+
+#if 1 /* block_warning_message */
+static DEVICE_ATTR(backlight_brightness, 0664, show_backlight_level, store_backlight_level);
+#else
+static DEVICE_ATTR(backlight_brightness, 0664, show_backlight_level, NULL);
+#endif
+
+#if defined(TARGET_MT6582_Y50) || defined(TARGET_MT6582_Y70) || defined(TARGET_MT6582_Y90) || defined(TARGET_MT6582_B2L) || defined(TARGET_MT6582_P1S3G) /* LGE_BSP_COMMON LGE_CHANGE_S 140303 jongwoo82.lee : interface for HW tunning */
+static ssize_t show_backlight_test(struct device *dev, struct device_attribute *attr, char *buf)
+{
+	return 0;
+}
+
+static ssize_t store_backlight_test(struct device *dev,struct device_attribute *attr, const char *buf, size_t size)
+{
+        unsigned long cnt = 0;
+        int error = -1;
+        int (*cust_led)(int) = NULL;
+
+	if(buf != NULL && size != 0)
+	{
+		LEDS_DRV_DEBUG("store_backlight_test: size:%d,address:0x%s\n", size,buf);
+		error = strict_strtoul(buf,10, &cnt);
+
+	        printk("[LED][TEST] backlight test cnt : %d\n",(unsigned char)cnt);
+
+	        cust_led = mt_set_cust_backlight_test;
+	        if(cust_led != NULL)
+                   cust_led((unsigned char)cnt);
+	}
+
+	return size;
+}
+
+static DEVICE_ATTR(backlight_test, 0664, show_backlight_test, store_backlight_test);
+#endif  /* LGE_BSP_COMMON LGE_CHANGE_E 140303 jongwoo82.lee : interface for HW tunning */
+
 
 /****************************************************************************
  * driver functions
@@ -513,10 +710,38 @@ static int __init mt65xx_leds_probe(struct platform_device *pdev)
 				LEDS_DRV_DEBUG("[LED]device_create_file duty fail!\n");
 			}
 
-			rc = device_create_file(g_leds_data[i]->cdev.dev, &dev_attr_pwm_register);
-			if (rc) {
-				LEDS_DRV_DEBUG("[LED]device_create_file duty fail!\n");
-			}
+	    rc = device_create_file(g_leds_data[i]->cdev.dev, &dev_attr_pwm_register);
+            if(rc)
+            {
+                LEDS_DRV_DEBUG("[LED]device_create_file duty fail!\n");
+            }
+#if defined(TARGET_MT6582_Y90) \
+|| defined(TARGET_MT6732_C90) || defined(TARGET_MT6582_B2L) \
+|| defined(TARGET_MT6582_P1S3G) /* LGE_BSP_COMMON sangcheol.seo@lge.com 140520 : LED */
+            rc = device_create_file(g_leds_data[i]->cdev.dev, &dev_attr_pattern);
+            if(rc)
+            {
+                LEDS_DRV_DEBUG("[LED]device_create_file patten fail!\n");
+            }
+            rc = device_create_file(g_leds_data[i]->cdev.dev, &dev_attr_blink);
+            if(rc)
+            {
+                LEDS_DRV_DEBUG("[LED]device_create_file blink fail!\n");
+            }
+#endif /* LGE_CHAGNE_E */
+			rc = device_create_file(g_leds_data[i]->cdev.dev, &dev_attr_backlight_brightness);
+			if(rc)
+            {
+                LEDS_DRV_DEBUG("[LED]device_create_file blink fail!\n");
+            }
+#if defined(TARGET_MT6582_Y50) || defined(TARGET_MT6582_Y70) || defined(TARGET_MT6582_Y90) || defined(TARGET_MT6582_B2L) || defined(TARGET_MT6582_P1S3G) /* LGE_BSP_COMMON LGE_CHANGE_S 140303 jongwoo82.lee : interface for HW tunning */
+            rc = device_create_file(g_leds_data[i]->cdev.dev, &dev_attr_backlight_test);
+            if(rc)
+            {
+                LEDS_DRV_DEBUG("[LED]device_create_file backlight_test fail!\n");
+            }
+#endif  /* LGE_BSP_COMMON LGE_CHANGE_E 140303 jongwoo82.lee : interface for HW tunning */
+
 			bl_setting = &g_leds_data[i]->cust;
 		}
 

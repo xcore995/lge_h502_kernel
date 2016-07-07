@@ -310,7 +310,8 @@ int mt_led_blink_pmic(enum mt65xx_led_pmic pmic_type, struct nled_setting* led) 
 			upmu_set_rg_isink0_ck_pdn(0);
 			upmu_set_rg_isink0_ck_sel(0);
 			upmu_set_isink_ch0_mode(PMIC_PWM_0);
-			upmu_set_isink_ch0_step(0x3);//16mA
+			upmu_set_isink_ch0_step(0x1);//8mA
+			
 			upmu_set_isink_dim0_duty(duty);
 			upmu_set_isink_dim0_fsel(pmic_freqsel_array[time_index]);
 			upmu_set_isink_breath0_trf_sel(0x0);
@@ -322,7 +323,7 @@ int mt_led_blink_pmic(enum mt65xx_led_pmic pmic_type, struct nled_setting* led) 
 			upmu_set_rg_isink1_ck_pdn(0);
 			upmu_set_rg_isink1_ck_sel(0);
 			upmu_set_isink_ch1_mode(PMIC_PWM_0);
-			upmu_set_isink_ch1_step(0x3);//16mA
+			upmu_set_isink_ch1_step(0x0);//4mA
 			upmu_set_isink_dim1_duty(duty);
 			upmu_set_isink_dim1_fsel(pmic_freqsel_array[time_index]);
 			upmu_set_isink_breath1_trf_sel(0x0);
@@ -610,7 +611,7 @@ int mt_brightness_set_pmic(enum mt65xx_led_pmic pmic_type, u32 level, u32 div)
             upmu_set_rg_isink1_ck_pdn(0x0); // Disable power down   
             upmu_set_rg_isink1_ck_sel(0x1); // Freq = 1Mhz for Backlight
 			upmu_set_isink_ch1_mode(ISINK_PWM_MODE);
-            upmu_set_isink_ch1_step(0x5); // 24mA
+            upmu_set_isink_ch1_step(0x0); // 4mA
             upmu_set_isink_sfstr1_en(0x0); // Disable soft start
 			upmu_set_rg_isink1_double_en(0x1); // Enable double current
 			upmu_set_isink_phase1_dly_en(0x1); // Enable phase delay
@@ -661,7 +662,7 @@ int mt_brightness_set_pmic(enum mt65xx_led_pmic pmic_type, u32 level, u32 div)
             upmu_set_isink_ch2_step(current_mapping[level-1]);
             upmu_set_isink_ch3_step(current_mapping[level-1]);
             upmu_set_isink_dim0_fsel(0x2); // 20Khz
-            upmu_set_isink_dim1_fsel(0x2); // 20Khz
+            upmu_set_isink_dim1_fsel(999); // 20Khz
             upmu_set_isink_dim2_fsel(0x2); // 20Khz
             upmu_set_isink_dim3_fsel(0x2); // 20Khz            
             upmu_set_isink_ch0_en(0x1); // Turn on ISINK Channel 0
@@ -697,13 +698,13 @@ int mt_brightness_set_pmic(enum mt65xx_led_pmic pmic_type, u32 level, u32 div)
 				upmu_set_rg_isink0_ck_pdn(0);
 				upmu_set_rg_isink0_ck_sel(0);
 				upmu_set_isink_ch0_mode(PMIC_PWM_0);
-				upmu_set_isink_ch0_step(0x3);//16mA
+				upmu_set_isink_ch0_step(0x1);//8mA
 				//hwPWMsetting(PMIC_PWM_1, 15, 8);
-				upmu_set_isink_dim0_duty(15);
-				upmu_set_isink_dim0_fsel(0);//6323 1KHz
-				
-			
-			if (level) 
+				upmu_set_isink_dim0_duty(31);
+				upmu_set_isink_dim0_fsel(999);//6323 1KHz
+
+
+			if (level)
 			{
 
 				upmu_set_isink_ch0_en(0x01);
@@ -732,10 +733,10 @@ int mt_brightness_set_pmic(enum mt65xx_led_pmic pmic_type, u32 level, u32 div)
 				upmu_set_rg_isink1_ck_pdn(0);
 				upmu_set_rg_isink1_ck_sel(0);
 				upmu_set_isink_ch1_mode(PMIC_PWM_0);
-				upmu_set_isink_ch1_step(0x3);//16mA
+				upmu_set_isink_ch1_step(0x0);//4mA
 				//hwPWMsetting(PMIC_PWM_2, 15, 8);
-				upmu_set_isink_dim1_duty(15);
-				upmu_set_isink_dim1_fsel(0);//6323 1KHz
+				upmu_set_isink_dim1_duty(31);
+				upmu_set_isink_dim1_fsel(999);//6323 1KHz
 
 			if (level) 
 			{
@@ -805,10 +806,10 @@ int mt_brightness_set_pmic(enum mt65xx_led_pmic pmic_type, u32 level, u32 div)
 				upmu_set_rg_isink3_ck_pdn(0);
 				upmu_set_rg_isink3_ck_sel(0);
 				upmu_set_isink_ch3_mode(PMIC_PWM_0);
-				upmu_set_isink_ch3_step(0x3);//16mA
+				upmu_set_isink_ch3_step(0x0);//4mA
 				//hwPWMsetting(PMIC_PWM_1, 15, 8);
-				upmu_set_isink_dim3_duty(15);
-				upmu_set_isink_dim3_fsel(0);//6323 1KHz
+				upmu_set_isink_dim3_duty(31);
+				upmu_set_isink_dim3_fsel(999);//6323 1KHz
 
 			
 			if (level) 
@@ -1139,5 +1140,123 @@ int  mt_mt65xx_blink_set(struct led_classdev *led_cdev,
 	// delay_on and delay_off are not changed
 	return 0;
 }
+typedef struct {
+    kal_uint32 isink1_step;
+    kal_uint32 isink1_dim1_duty;
+    kal_uint32 isink1_dim1_fsel;
+    kal_uint32 isink1_breath1_trf_sel;
+	kal_uint32 isink1_breath1_ton_sel;
+	kal_uint32 isink1_breath1_toff_sel;
+} ISINK1_LED_Breathmode_set_table;
 
+static ISINK1_LED_Breathmode_set_table led_scene_setting[] = {
+	{0x1, 31, 999, 15, 3, 0},// 0.charging
+	{0x1, 31, 999,  7, 3, 0},// 1.Power on
+	{0x1, 31, 999,  7, 3, 0},// 2.Power off
+	{0x1, 31, 999,  0, 0, 0},// 3.Alarm
+	{0x1, 31, 999,  2, 0, 0},// 4.Incomming call
+	{0x1, 31, 999,  0, 0, 0},// 5.Urgent Incomming call
+	{0x1, 31, 999,  4, 3, 2},// 6.In call
+	{0x1, 31, 999,  0, 4, 0},// 7.Knock_on / Knock_code_fail / Bluetooth connect / Bluetooth disconnect
+	{0x1, 31, 999,  0, 0, 4},// 8.Missed call / Urgent missed call
+	{0x1, 31, 999,  7, 3, 0},// 9.default
+};
 
+int mt_mt65xx_breath_mode(unsigned int patternid)
+{
+	/* sangcheol.seo@lge.com 20140919*/
+	// MT65XX_LED_PMIC_NLED_ISINK0
+	printk("[LED_breathmode] patternid = %d\n", patternid);
+	printk("[LED_breathmode] ch1_step = 0x%x, dim1_duty = %d, dim1_fsel = %d, breath1_trf_sel = %d, breath1_ton_sel = %d, breath1_toff_sel = %d\n",\
+	led_scene_setting[patternid].isink1_step, led_scene_setting[patternid].isink1_dim1_duty, led_scene_setting[patternid].isink1_dim1_fsel, \
+	led_scene_setting[patternid].isink1_breath1_trf_sel, led_scene_setting[patternid].isink1_breath1_ton_sel, led_scene_setting[patternid].isink1_breath1_toff_sel);
+	#if defined(TARGET_MT6582_B2L)//G3S LED using isink1
+	upmu_set_rg_isink1_ck_pdn(0);
+	upmu_set_rg_isink1_ck_sel(0);
+	upmu_set_isink_ch1_mode(ISINK_BREATH_MODE);
+	upmu_set_isink_ch1_step(led_scene_setting[patternid].isink1_step);//4mA
+	upmu_set_isink_dim1_duty(led_scene_setting[patternid].isink1_dim1_duty);
+	upmu_set_isink_dim1_fsel(led_scene_setting[patternid].isink1_dim1_fsel);
+	upmu_set_isink_breath1_trf_sel(led_scene_setting[patternid].isink1_breath1_trf_sel);
+	upmu_set_isink_breath1_ton_sel(led_scene_setting[patternid].isink1_breath1_ton_sel);
+	upmu_set_isink_breath1_toff_sel(led_scene_setting[patternid].isink1_breath1_toff_sel);
+	upmu_set_isink_ch1_en(0x01);
+	#else
+	upmu_set_rg_isink0_ck_pdn(0);
+	upmu_set_rg_isink0_ck_sel(0);
+	upmu_set_isink_ch0_mode(ISINK_BREATH_MODE);
+	upmu_set_isink_ch0_step(led_scene_setting[patternid].isink1_step);//4mA
+	upmu_set_isink_dim0_duty(led_scene_setting[patternid].isink1_dim1_duty);
+	upmu_set_isink_dim0_fsel(led_scene_setting[patternid].isink1_dim1_fsel);
+	upmu_set_isink_breath0_trf_sel(led_scene_setting[patternid].isink1_breath1_trf_sel);
+	upmu_set_isink_breath0_ton_sel(led_scene_setting[patternid].isink1_breath1_ton_sel);
+	upmu_set_isink_breath0_toff_sel(led_scene_setting[patternid].isink1_breath1_toff_sel);
+	upmu_set_isink_ch0_en(0x01);
+	#endif
+}
+
+int mt_mt65xx_breath_mode_2(int freq, int duty, int trf, int ton,int toff)
+{
+	/* sangcheol.seo@lge.com 20140919*/
+	// MT65XX_LED_PMIC_NLED_ISINK0
+	#if defined(TARGET_MT6582_B2L)//G3S LED using isink1
+	upmu_set_rg_isink1_ck_pdn(0);
+	upmu_set_rg_isink1_ck_sel(0);
+	upmu_set_isink_ch1_mode(ISINK_BREATH_MODE);
+	upmu_set_isink_ch1_step(0x0);//4mA
+	upmu_set_isink_dim1_duty(duty);
+	upmu_set_isink_dim1_fsel(freq);
+	upmu_set_isink_breath1_trf_sel(trf);
+	upmu_set_isink_breath1_ton_sel(ton);
+	upmu_set_isink_breath1_toff_sel(toff);
+	upmu_set_isink_ch1_en(0x01);
+	#else
+	upmu_set_rg_isink0_ck_pdn(0);
+	upmu_set_rg_isink0_ck_sel(0);
+	upmu_set_isink_ch0_mode(ISINK_BREATH_MODE);
+	upmu_set_isink_ch0_step(led_scene_setting[0].isink1_step);
+	upmu_set_isink_dim0_duty(duty);
+	upmu_set_isink_dim0_fsel(freq);
+	upmu_set_isink_breath0_trf_sel(trf);
+	upmu_set_isink_breath0_ton_sel(ton);
+	upmu_set_isink_breath0_toff_sel(toff);
+	upmu_set_isink_ch0_en(0x01);
+	#endif
+}
+void mt_mt65xx_led_set_to_breathmode(void)
+{
+	/* sangcheol.seo@lge.com 20140919*/
+	// MT65XX_LED_PMIC_NLED_ISINK0
+	#if defined(TARGET_MT6582_B2L)//G3S LED using isink1
+	upmu_set_rg_isink1_ck_pdn(0);
+	upmu_set_rg_isink1_ck_sel(0);
+	upmu_set_isink_ch1_mode(ISINK_BREATH_MODE);
+	upmu_set_isink_ch1_step(0x0);//4mA
+	upmu_set_isink_dim1_duty(31);
+	upmu_set_isink_dim1_fsel(999);
+	upmu_set_isink_breath1_trf_sel(0);
+	upmu_set_isink_breath1_ton_sel(0);
+	upmu_set_isink_breath1_toff_sel(0);
+	#else
+	upmu_set_rg_isink0_ck_pdn(0);
+	upmu_set_rg_isink0_ck_sel(0);
+	upmu_set_isink_ch0_mode(ISINK_BREATH_MODE);
+	upmu_set_isink_ch0_step(led_scene_setting[0].isink1_step);
+	upmu_set_isink_dim0_duty(31);
+	upmu_set_isink_dim0_fsel(999);
+	upmu_set_isink_breath0_trf_sel(0);
+	upmu_set_isink_breath0_ton_sel(0);
+	upmu_set_isink_breath0_toff_sel(0);
+	#endif
+	//upmu_set_isink_ch1_en(0x01);
+}
+#if 1  /* LGE_BSP_COMMON LGE_CHANGE_S 140303 jongwoo82.lee : interface for HW tunning */
+int mt_set_cust_backlight_test(int cnt)
+{
+    #if defined(TARGET_MT6582_Y50)
+	return chargepump_backlight_level_test(cnt);
+    #else
+        return 0;
+    #endif
+}
+#endif  /* LGE_BSP_COMMON LGE_CHANGE_E 140303 jongwoo82.lee : interface for HW tunning */

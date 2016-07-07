@@ -6,7 +6,7 @@
 /*---------------------------------------------------------------------------*/
 static struct acc_hw cust_acc_hw = {
     .i2c_num    = 2,
-    .direction  = 5,                    /*!< If direction is changed, modify it*/
+    .direction  = 7,                    /*!< If direction is changed, modify it*/
     .power_id   = MT65XX_POWER_NONE,    /*!< LDO is not used */
     .power_vol  = VOL_DEFAULT,          /*!< LDO is not used */
     .firlen = 0,                        /*!< don't enable low pass fileter */

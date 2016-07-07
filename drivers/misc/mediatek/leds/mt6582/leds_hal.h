@@ -36,5 +36,10 @@ extern int  mt_mt65xx_blink_set(struct led_classdev *led_cdev,
 struct cust_mt65xx_led* mt_get_cust_led_list(void);
 
 
+extern void mt_mt65xx_breath_mode();
+extern void mt_mt65xx_breath_mode_1(); 	/* PWR on, off */
+extern int mt_mt65xx_breath_mode_2(int freq, int duty, int trf, int ton,int toff);
+extern int mt_mt65xx_breath_mode_alarm();
+extern int mt_mt65xx_breath_mode_incomming_call();
 
 
