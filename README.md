@@ -1,6 +1,6 @@
 # Sprout kernel
 
-Bugs
+# Bugs:
 Touch
 RIL
 etc
